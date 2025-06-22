@@ -5,6 +5,7 @@ import {
   getContactById,
   updateContact,
   deleteContact,
+  patchContact,
 } from '../controllers/contacts.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 
@@ -15,5 +16,6 @@ router.post('/', ctrlWrapper(createContact));         // Yeni kişi ekle
 router.get('/:id', ctrlWrapper(getContactById));      // ID ile kişi getir
 router.put('/:id', ctrlWrapper(updateContact));       // ID ile kişi güncelle
 router.delete('/:id', ctrlWrapper(deleteContact));    // ID ile kişi sil
+router.patch('/:id', ctrlWrapper(patchContact))
 
 export default router;
