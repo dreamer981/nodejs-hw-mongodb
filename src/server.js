@@ -1,7 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import pino from 'pino-http';
-import contactsRoutes from './routes/contactsRoutes.js'; // buraya route'u import et
+import contactsRoutes from './routes/contacts.js'; // buraya route'u import et
+import { errorHandler } from './middlewares/errorHandler.js';
+import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
 export const setupServer = () => {
   const app = express();
@@ -15,11 +17,9 @@ export const setupServer = () => {
   // Rotalar buraya eklenecek
   app.use('/api/contacts', contactsRoutes);
 
-  // 404 için fallback
- app.use((req, res) => {
-  res.status(404).json({ message: 'Not found' });
-});
+  app.use(notFoundHandler);
 
+  app.use(errorHandler);
 
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
