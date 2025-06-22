@@ -1,4 +1,5 @@
 import { Contact } from '../models/contactModel.js';
+import mongoose from 'mongoose';
 
 // Tüm kişileri getir
 export const getAllContacts = async (req, res) => {
@@ -23,14 +24,26 @@ export const createContact = async (req, res) => {
 
 // ID’ye göre kişi getir
 export const getContactById = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ message: 'Contact not found' });
+  }
+
   try {
-    const contact = await Contact.findById(req.params.id);
-    if (!contact) return res.status(404).json({ message: 'Contact not found' });
+    const contact = await Contact.findById(id);
+
+    if (!contact) {
+      return res.status(404).json({ message: 'Contact not found' });
+    }
+
     res.status(200).json(contact);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+
 
 // ID’ye göre kişi güncelle
 export const updateContact = async (req, res) => {

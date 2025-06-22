@@ -16,9 +16,10 @@ export const setupServer = () => {
   app.use('/api/contacts', contactsRoutes);
 
   // 404 için fallback
-  app.use((req, res) => {
-    res.status(404).json({ message: 'Not found' });
-  });
+ app.use((req, res) => {
+  res.status(404).json({ message: 'Not found' });
+});
+
 
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
