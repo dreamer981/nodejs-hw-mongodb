@@ -11,8 +11,6 @@ export const setupServer = () => {
 
   app.use(cors());
   app.use(pino());
-app.get('/favicon.ico', (req, res) => res.status(204).end());
-
 
   app.use(express.json()); // JSON body parse için mutlaka ekle
 
