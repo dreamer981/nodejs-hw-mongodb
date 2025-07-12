@@ -1,5 +1,5 @@
 import { Contact } from '../models/contactModel.js'; 
-import { SORT_ORDER } from '../constants/sort.js';
+import { SORT_ORDER } from '../constants/index.js';
 import { calculatePaginationData } from '../utils/parsePaginationParams.js';
 
 export const getAllContacts = async ({

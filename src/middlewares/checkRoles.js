@@ -1,6 +1,6 @@
 import createHttpError from 'http-errors';
 import { Contact } from '../models/contactModel.js';
-import { ROLES } from '../constants/sort.js';
+import { ROLES } from '../constants/index.js';
 
 export const checkRoles = (...roles) => async (req, res, next) => {
   const { user } = req;

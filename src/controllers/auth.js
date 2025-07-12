@@ -1,6 +1,6 @@
 import { registerUser } from '../services/auth.js';
 import { loginUser } from '../services/auth.js';
-import { THIRTY_DAY } from '../constants/sort.js';
+import { THIRTY_DAY } from '../constants/index.js';
 import { logoutUser } from '../services/auth.js';
 import { refreshUsersSession } from '../services/auth.js';
 

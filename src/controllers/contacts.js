@@ -4,7 +4,7 @@ import createHttpError from 'http-errors';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
-import { SORT_ORDER } from '../constants/sort.js';
+import { SORT_ORDER } from '../constants/index.js';
 import { calculatePaginationData } from '../utils/parsePaginationParams.js';
 
 export const getAllContacts = async ({

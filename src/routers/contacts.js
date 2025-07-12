@@ -12,7 +12,7 @@ import { createContactSchema } from '../validation/contact.js';
 import { validateBody } from '../middlewares/validateBody.js';
 import { isValidId } from '../middlewares/isValidId.js';
 import { authenticate } from '../middlewares/authenticate.js';
-import { ROLES } from '../constants/sort.js';
+import { ROLES } from '../constants/index.js';
 import { checkRoles } from '../middlewares/checkRoles.js';
 
 const router = express.Router();
