@@ -48,6 +48,7 @@ const [contactsCount, contacts] = await Promise.all([
 // Yeni kişi ekle
 export const createContact = async (req, res, next) => {
   try {
+     req.body.owner = req.user._id;
     const newContact = new Contact(req.body);
     const savedContact = await newContact.save();
     res.status(201).json({

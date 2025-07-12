@@ -1,9 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import pino from 'pino-http';
-import contactsRoutes from './routes/contacts.js'; // buraya route'u import et
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
+import router from './routers/index.js';
+import cookieParser from 'cookie-parser';
 
 export const setupServer = () => {
   const app = express();
@@ -12,10 +13,9 @@ export const setupServer = () => {
   app.use(cors());
   app.use(pino());
 
-  app.use(express.json()); // JSON body parse için mutlaka ekle
-
-  // Rotalar buraya eklenecek
-  app.use('/api/contacts', contactsRoutes);
+  app.use(express.json());
+  app.use(cookieParser());
+  app.use(router);
 
   app.use(notFoundHandler);
 
@@ -24,6 +24,4 @@ export const setupServer = () => {
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });
-
-
 };

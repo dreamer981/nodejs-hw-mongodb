@@ -14,4 +14,5 @@ export const createContactSchema = Joi.object({
     .valid('work', 'home', 'personal')
     .default('personal')
     .required(),
+  userId: Joi.string().required(),
 });
