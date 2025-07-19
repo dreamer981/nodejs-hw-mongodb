@@ -1,14 +1,16 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-console.log('MONGODB_URI:', process.env.MONGODB_URI);
-
 import { setupServer } from './server.js';
 import { initMongoConnection } from './db/initMongoConnection.js';
+import { createDirIfNotExists } from './utils/createDirIfNotExists.js';
+import { TEMP_UPLOAD_DIR, UPLOAD_DIR } from './constants/index.js';
 
 const bootstrap = async () => {
-  await initMongoConnection(); // önce MongoDB bağlantısı
-  setupServer();               // sonra Express sunucusunu başlat
+  await initMongoConnection();
+  await createDirIfNotExists(TEMP_UPLOAD_DIR);
+  await createDirIfNotExists(UPLOAD_DIR);
+  setupServer();
 };
 
 bootstrap();

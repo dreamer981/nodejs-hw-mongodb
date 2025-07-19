@@ -7,13 +7,15 @@ const contactSchema = new mongoose.Schema(
     email: { type: String, default: null },
     isFavourite: { type: Boolean, default: false },
     contactType: {
-      required: true, 
+      required: true,
       type: String,
       enum: ['work', 'home', 'personal'],
       default: 'personal',
     },
- owner: { type: Schema.Types.ObjectId, ref: 'users', required: true }  },
-  { timestamps: true, versionKey: false }
+    owner: { type: Schema.Types.ObjectId, ref: 'users', required: true },
+    photo: { type: String },
+  },
+  { timestamps: true, versionKey: false },
 );
 
 export const Contact = mongoose.model('Contact', contactSchema);

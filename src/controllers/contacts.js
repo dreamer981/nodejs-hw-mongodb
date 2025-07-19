@@ -6,6 +6,8 @@ import { parseSortParams } from '../utils/parseSortParams.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
 import { SORT_ORDER } from '../constants/index.js';
 import { calculatePaginationData } from '../utils/parsePaginationParams.js';
+import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
+import { env } from '../utils/env.js';
 
 export const getAllContacts = async ({
   page = 1,
@@ -27,14 +29,14 @@ export const getAllContacts = async ({
     contactsQuery.where('isFavourite').equals(filter.isFavourite);
   }
 
-const [contactsCount, contacts] = await Promise.all([
-  Contact.find().merge(contactsQuery).countDocuments(),
-  contactsQuery
-    .skip(skip)
-    .limit(limit)
-    .sort({ [sortBy]: sortOrder })
-    .exec(),
-]);
+  const [contactsCount, contacts] = await Promise.all([
+    Contact.find().merge(contactsQuery).countDocuments(),
+    contactsQuery
+      .skip(skip)
+      .limit(limit)
+      .sort({ [sortBy]: sortOrder })
+      .exec(),
+  ]);
 
   const paginationData = calculatePaginationData(contactsCount, perPage, page);
 
@@ -44,11 +46,10 @@ const [contactsCount, contacts] = await Promise.all([
   };
 };
 
-
 // Yeni kişi ekle
 export const createContact = async (req, res, next) => {
   try {
-     req.body.owner = req.user._id;
+    req.body.owner = req.user._id;
     const newContact = new Contact(req.body);
     const savedContact = await newContact.save();
     res.status(201).json({
@@ -85,7 +86,9 @@ export const updateContact = async (req, res, next) => {
       return res.status(404).json({ message: 'Contact not found' });
     }
 
-    const updatedContact = await Contact.findByIdAndUpdate(id, req.body, { new: true });
+    const updatedContact = await Contact.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
 
     if (!updatedContact) {
       return res.status(404).json({ message: 'Contact not found' });
@@ -114,17 +117,35 @@ export const deleteContact = async (req, res, next) => {
   }
 };
 
-
 export const patchContact = async (req, res, next) => {
   try {
     const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+      if (!mongoose.Types.ObjectId.isValid(id)) {
       throw createHttpError(404, 'Contact not found');
     }
-    const updatedContact = await Contact.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const photo = req.file;
+    let photoUrl;
+
+     if (photo) {
+    if (env('ENABLE_CLOUDINARY') === 'true') {
+      photoUrl = await saveFileToCloudinary(photo);
+    } else {
+      photoUrl = await saveFileToUploadDir(photo);
+    }
+  }
+   
+  
+    const updatedContact = await Contact.findByIdAndUpdate(
+      id,
+      {
+        ...req.body,
+        ...(photoUrl && { photo: photoUrl }),
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
 
     if (!updatedContact) {
       throw createHttpError(404, 'Contact not found');
@@ -139,9 +160,6 @@ export const patchContact = async (req, res, next) => {
     next(error);
   }
 };
-
-
-
 
 export const getContactsController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);
