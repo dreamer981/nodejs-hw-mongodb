@@ -38,3 +38,4 @@ const [contactsCount, contacts] = await Promise.all([
     ...paginationData,
   };
 };
+
