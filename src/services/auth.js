@@ -7,7 +7,7 @@ import { randomBytes } from 'crypto';
 import jwt from 'jsonwebtoken';
 import { SMTP } from '../constants/index.js';
 import { env } from '../utils/env.js';
-import { transporter } from '../utils/sendMail.js';
+import { sendEmail } from '../utils/sendEmail.js';
 import handlebars from 'handlebars';
 import path from 'node:path';
 import fs from 'node:fs/promises';
@@ -127,13 +127,14 @@ export const requestResetToken = async (email) => {
 
 
   try {
-    await transporter.sendMail({
+    await sendEmail({
       from: env(SMTP.SMTP_FROM),
       to: email,
       subject: 'Reset your password',
       html,
     });
   } catch (error) {
+      console.error('E-Posta gönderme hatası:', error);
     throw createHttpError(
       500,
       'Failed to send the email, please try again later.',
