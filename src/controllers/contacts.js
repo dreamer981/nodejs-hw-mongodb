@@ -124,9 +124,9 @@ export const patchContact = async (req, res, next) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw createHttpError(404, 'Contact not found');
     }
+
     const photo = req.file;
     let photoUrl;
-
     if (photo) {
       if (env('ENABLE_CLOUDINARY') === 'true') {
         photoUrl = await saveFileToCloudinary(photo);
@@ -135,9 +135,15 @@ export const patchContact = async (req, res, next) => {
       }
     }
 
-    const result = await updateContact(id, {
+    const updatedData = {
       ...req.body,
-      photo: photoUrl,
+    };
+    if (photoUrl) {
+      updatedData.photo = photoUrl;
+    }
+
+    const result = await Contact.findByIdAndUpdate(id, updatedData, {
+      new: true,
     });
 
     if (!result) {
@@ -147,13 +153,13 @@ export const patchContact = async (req, res, next) => {
     res.status(200).json({
       status: 200,
       message: 'Successfully patched a contact!',
-      data: updatedContact,
+      data: result,
     });
   } catch (error) {
-    console.error('PATCH error:', error);
     next(error);
   }
 };
+
 
 export const getContactsController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);
