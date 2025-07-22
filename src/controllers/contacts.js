@@ -7,6 +7,7 @@ import { parseFilterParams } from '../utils/parseFilterParams.js';
 import { SORT_ORDER } from '../constants/index.js';
 import { calculatePaginationData } from '../utils/parsePaginationParams.js';
 import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 import { env } from '../utils/env.js';
 
 export const getAllContacts = async ({
@@ -120,34 +121,26 @@ export const deleteContact = async (req, res, next) => {
 export const patchContact = async (req, res, next) => {
   try {
     const { id } = req.params;
-      if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       throw createHttpError(404, 'Contact not found');
     }
     const photo = req.file;
     let photoUrl;
 
-     if (photo) {
-    if (env('ENABLE_CLOUDINARY') === 'true') {
-      photoUrl = await saveFileToCloudinary(photo);
-    } else {
-      photoUrl = await saveFileToUploadDir(photo);
-    }
-  }
-   
-  
-    const updatedContact = await Contact.findByIdAndUpdate(
-      id,
-      {
-        ...req.body,
-        ...(photoUrl && { photo: photoUrl }),
-      },
-      {
-        new: true,
-        runValidators: true,
+    if (photo) {
+      if (env('ENABLE_CLOUDINARY') === 'true') {
+        photoUrl = await saveFileToCloudinary(photo);
+      } else {
+        photoUrl = await saveFileToUploadDir(photo);
       }
-    );
+    }
 
-    if (!updatedContact) {
+    const result = await updateContact(id, {
+      ...req.body,
+      photo: photoUrl,
+    });
+
+    if (!result) {
       throw createHttpError(404, 'Contact not found');
     }
 
@@ -157,6 +150,7 @@ export const patchContact = async (req, res, next) => {
       data: updatedContact,
     });
   } catch (error) {
+    console.error('PATCH error:', error);
     next(error);
   }
 };

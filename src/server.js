@@ -19,7 +19,19 @@ export const setupServer = () => {
   app.use(router);
 
   app.use(notFoundHandler);
+app.use((err, req, res, next) => {
+  if (err.name === 'MulterError') {
+    console.error('💥 Multer hatası:', err);
+    return res.status(400).json({
+      status: 400,
+      message: 'Multer file upload error',
+      data: err.message,
+    });
+  }
 
+  // Diğer hatalara geç
+  next(err);
+});
   app.use(errorHandler);
 
   app.listen(PORT, () => {

@@ -134,7 +134,6 @@ export const requestResetToken = async (email) => {
       html,
     });
   } catch (error) {
-      console.error('E-Posta gönderme hatası:', error);
     throw createHttpError(
       500,
       'Failed to send the email, please try again later.',
@@ -168,3 +167,4 @@ export const resetPassword = async (payload) => {
     { password: encryptedPassword },
   );
 };
+
